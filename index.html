@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我爱你😘</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+		body {
+		  margin: 0;
+		  padding: 0;
+		  height: 100vh;
+		  background: linear-gradient(45deg, #ff7f7f, #ffb3b3, #ffcccc, #ff7f7f);
+		  background-size: 400% 400%;
+		  animation: gradientAnimation 10s ease infinite;
+		}
+
+		@keyframes gradientAnimation {
+		  0% {
+			background-position: 0% 50%;
+		  }
+		  50% {
+			background-position: 100% 50%;
+		  }
+		  100% {
+			background-position: 0% 50%;
+		  }
+		}
+
+        .container {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 文字动画 */
+        .message {
+            position: absolute;
+            color: #fff;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 2s forwards 1s;
+        }
+		h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff69b4;
+        }
+
+        p {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+        /* 粒子背景 */
+        #particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 动画定义 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes colorChange {
+            0% { color: #ff0066; }
+            50% { color: #ff99cc; }
+            100% { color: #ff0066; }
+        }
+
+        .petal {
+            position: absolute;
+            color: #ff6699;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+		@keyframes typing {
+		  to {
+			width: 100%;
+		  }
+		}
+
+		@keyframes blink {
+		  50% {
+			border-color: transparent;
+		  }
+		}
+			@keyframes typing {
+		  to {
+			width: 100%;
+		  }
+		}
+
+		@keyframes blink {
+		  50% {
+			border-color: transparent;
+		  }
+		}		
+    </style>
+	<script src="scripts/rose.js"></script>
+</head>
+<body bgcolor="#161616">
+  	<audio preload="none" autoplay="autoplay" loop="loop" >
+          <source src="audio/planet.mp3" type="audio/mp3">
+  	</audio>
+	<div class="container">
+        <div class="message">
+            <h1>❤️ 亲爱的 ❤️</h1>
+            <p>在万千星辰中，你是我眼中唯一的光</p>
+            <p>愿以余生为期，许你一世温柔</p>
+            <p>你愿意成为我的唯一吗？</p>
+			<p>🌹</p>
+        </div>
+  	</div>
+</body>
+</html>
