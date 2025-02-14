@@ -1,136 +1,342 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我爱你😘</title>
+    <title>情人节惊喜</title>
     <style>
-        * {
+        body {
+            background: linear-gradient(45deg, #ff3864, #ff6b6b);
+            height: 100vh;
+            overflow: hidden;
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32"><text x="8" y="24" style="font-size:20px;">❤️</text></svg>'), auto;
         }
-		body {
-		  margin: 0;
-		  padding: 0;
-		  height: 100vh;
-		  background: linear-gradient(45deg, #ff7f7f, #ffb3b3, #ffcccc, #ff7f7f);
-		  background-size: 400% 400%;
-		  animation: gradientAnimation 10s ease infinite;
+		@keyframes pulse {
+			0% { transform: scale(1); }
+			50% { transform: scale(1.05); }
+			100% { transform: scale(1); }
 		}
 
-		@keyframes gradientAnimation {
-		  0% {
-			background-position: 0% 50%;
-		  }
-		  50% {
-			background-position: 100% 50%;
-		  }
-		  100% {
-			background-position: 0% 50%;
-		  }
+		@keyframes blink {
+			0% { opacity: 0.3; }
+			50% { opacity: 1; }
+			100% { opacity: 0.3; }
+		}
+
+		@keyframes shake {
+			10%, 90% { transform: translateX(-1px); }
+			20%, 80% { transform: translateX(2px); }
+			30%, 50%, 70% { transform: translateX(-4px); }
+			40%, 60% { transform: translateX(4px); }
+		}
+
+		/* 粒子动画 */
+		@keyframes trail {
+			0% { opacity: 1; transform: scale(1); }
+			100% { opacity: 0; transform: scale(0.1) translateY(-100px); }
+		}
+
+		/* 抖动效果 */
+		@keyframes shake {
+			0% { transform: translateX(0); }
+			25% { transform: translateX(10px); }
+			50% { transform: translateX(-10px); }
+			100% { transform: translateX(0); }
+		}
+
+		canvas {
+			pointer-events: none;
 		}
 
         .container {
             position: relative;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            perspective: 1000px;
         }
 
-        /* 文字动画 */
-        .message {
+        .heart {
             position: absolute;
-            color: #fff;
-            text-align: center;
-            opacity: 0;
-            animation: fadeIn 2s forwards 1s;
-        }
-		h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #ff69b4;
-        }
-
-        p {
-            font-size: 1.5em;
-            margin: 10px 0;
-        }
-        /* 粒子背景 */
-        #particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* 动画定义 */
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes colorChange {
-            0% { color: #ff0066; }
-            50% { color: #ff99cc; }
-            100% { color: #ff0066; }
-        }
-
-        .petal {
-            position: absolute;
-            color: #ff6699;
-            pointer-events: none;
-            animation: fall linear infinite;
+            animation: fall 3s linear infinite;
+            font-size: 24px;
         }
 
         @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        #mainButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px 40px;
+            font-size: 24px;
+            background: rgba(255,255,255,0.2);
+            border: 3px solid white;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #mainButton:hover {
+            background: rgba(255,255,255,0.4);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .math-problem {
+            display: none;
+            position: absolute;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        #finalMessage {
+            display: none;
+            position: absolute;
+            width: 80%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.95);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loveText" style="color:white; text-align: center; padding-top: 20vh;">
+            <h1 style="font-size: 3em; text-shadow: 0 0 10px rgba(0,0,0,0.3);">给特别的人</h1>
+            <p>自从遇见你，我的世界开始转动...</p>
+        </div>
+        <button id="mainButton">点击接收我的心意</button>
+        <div id="finalMessage"></div>
+    </div>
+
+    <script>
+        let clickCount = 0;
+        const button = document.getElementById('mainButton');
+        const messages = [
+            "你以为会有甜蜜告白？先做道题吧！",
+            "√256等于？",
+            "80000÷2000等于？",
+            "(3×0.5+4)等于？",
+            "好了不闹了，最后认真说..."
+        ];
+
+        function createHearts() {
+            for (let i = 0; i < 50; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                document.body.appendChild(heart);
             }
         }
 
-		@keyframes typing {
-		  to {
-			width: 100%;
-		  }
+        button.addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 1) {
+                button.style.display = 'none';
+                const mathDiv = document.createElement('div');
+                mathDiv.className = 'math-problem';
+                mathDiv.innerHTML = `
+                    <h2>${messages[0]}</h2>
+                    <p>${messages[1]}</p>
+                    <input type="number">
+                    <button onclick="checkAnswer(16, this)">提交</button>
+                `;
+                document.body.appendChild(mathDiv);
+                mathDiv.style.top = '30vh';
+                mathDiv.style.left = '50%';
+                mathDiv.style.transform = 'translateX(-50%)';
+                mathDiv.style.display = 'block';
+            }
+        });
+// 接续前文脚本
+		function checkAnswer(correctAnswer, buttonElement) {
+			const parentDiv = buttonElement.parentElement;
+			const inputValue = parseFloat(buttonElement.previousElementSibling.value);
+			const errorMessages = [
+				"这可是送分题呀~", 
+				"再仔细想想？", 
+				"提示：答案在题目里", 
+				"你确定要放弃吗？"
+			];
+
+			// 回答正确时的处理
+			if (inputValue === correctAnswer) {
+				clickCount++;
+
+				// 阶段性更新问题
+				switch(clickCount) {
+					case 2: // 第二题
+						parentDiv.innerHTML = `
+							<h2>${messages[2]}</h2>
+							<input type="number" placeholder="输入答案" autofocus>
+							<button onclick="checkAnswer(40, this)" 
+									style="background:#ff93ac;">继续挑战</button>
+							<p style="color:#666;font-size:12px;">（答错会锁定10秒哦）</p>`;
+						break;
+
+					case 3: // 第三题
+						parentDiv.innerHTML = `
+							<h2>${messages[3]}</h2>
+							<input type="number" placeholder="小数也要精确哦" step="0.1">
+							<button onclick="checkAnswer(5.5, this)" 
+									style="background:#ff7675;">终极考验</button>
+							<div style="display:flex;gap:10px;margin-top:10px;">
+								<span style="color:#74b9ff;">❤️ 线索1：先乘除后加减</span>
+								<span style="color:#55efc4;">❤️ 线索2：3×0.5=1.5</span>
+							</div>`;
+						break;
+
+					case 4: // 最终过渡
+						parentDiv.innerHTML = `
+							<div style="animation: pulse 1s infinite;">
+								<h2>✨ 通关成功！ ✨</h2>
+								<button onclick="showFinalSurprise()" 
+										style="font-size:28px;padding:15px 30px;
+											   background:linear-gradient(45deg,#ff6b6b,#ff8e53);">
+									💖 点击接受真情告白 💖
+								</button>
+							</div>`;
+						break;
+				}
+
+			} else { // 回答错误处理
+				parentDiv.style.animation = 'shake 0.8s cubic-bezier(.36,.07,.19,.97) both';
+				setTimeout(() => parentDiv.style.animation = '', 800);
+
+				// 随机错误提示
+				const randomError = errorMessages[Math.floor(Math.random()*errorMessages.length)];
+				parentDiv.innerHTML += `
+					<div style="margin-top:10px;padding:10px;background:#ffe5e5;border-radius:5px;
+								animation: blink 1s;">
+						<span style="color:#ff4757;">❌ ${randomError}</span>
+						${clickCount === 2 ? '<br><span style="color:#2ed573;">（答案包含小数点）</span>' : ''}
+					</div>`;
+
+				// 错误锁定机制
+				if (clickCount >= 2) {
+					buttonElement.disabled = true;
+					buttonElement.textContent = '锁定中（10秒）';
+					let countdown = 10;
+					const timer = setInterval(() => {
+						buttonElement.textContent = `锁定中（${countdown--}秒）`;
+						if(countdown < 0) {
+							clearInterval(timer);
+							buttonElement.disabled = false;
+							buttonElement.textContent = '重新尝试';
+						}
+					}, 1000);
+				}
+			}
 		}
 
-		@keyframes blink {
-		  50% {
-			border-color: transparent;
-		  }
-		}
-			@keyframes typing {
-		  to {
-			width: 100%;
-		  }
+
+		function showFinalSurprise() {
+			document.querySelector('.math-problem').remove();
+
+			// 开启粒子系统
+			const canvas = document.createElement('canvas');
+			canvas.style.position = 'fixed';
+			canvas.style.top = 0;
+			canvas.style.left = 0;
+			document.body.appendChild(canvas);
+
+			// 粒子系统初始化
+			const ctx = canvas.getContext('2d');
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+
+			class Particle {
+				constructor(x, y) {
+					this.x = x;
+					this.y = y;
+					this.size = Math.random() * 2 + 1;
+					this.weight = Math.random() * 3 + 2;
+				}
+				update() {
+					this.y -= this.weight;
+					if (this.y < 0) this.y = canvas.height;
+				}
+				draw() {
+					ctx.fillStyle = `hsl(${Math.random()*360}, 100%, 50%)`;
+					ctx.beginPath();
+					ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+					ctx.fill();
+				}
+			}
+
+			// 情话数据库
+			const loveWords = [
+				"你是我的一见钟情电路",
+				"我们的爱像递归函数永不终止",
+				"你是我的唯一进程优先级",
+				"想和你建立永久TCP连接"
+			];
+
+			// 鼠标追踪爱心
+			document.addEventListener('mousemove', (e) => {
+				if(Math.random() > 0.8) {
+					const trail = document.createElement('div');
+					trail.className = 'heart';
+					trail.style.left = e.pageX + 'px';
+					trail.style.top = e.pageY + 'px';
+					trail.style.animation = 'trail 1s linear forwards';
+					document.body.appendChild(trail);
+					setTimeout(() => trail.remove(), 1000);
+				}
+			});
+
+			// 语音告白彩蛋
+			const synth = window.speechSynthesis;
+			function speak(text) {
+				const utterance = new SpeechSynthesisUtterance(text);
+				utterance.pitch = 1.5;
+				utterance.rate = 0.8;
+				synth.speak(utterance);
+			}
+
+			// 逃跑按钮逻辑
+			function createEscapeButton() {
+				const runBtn = document.createElement('button');
+				runBtn.textContent = "点不到~";
+				runBtn.style.position = 'fixed';
+				runBtn.style.transition = '0.1s';
+
+				runBtn.addEventListener('mouseover', () => {
+					const newX = Math.random() * (window.innerWidth - 100);
+					const newY = Math.random() * (window.innerHeight - 50);
+					runBtn.style.transform = `translate(${newX}px, ${newY}px)`;
+				});
+
+				document.body.appendChild(runBtn);
+				setTimeout(() => {
+					runBtn.remove();
+					alert("你是跑不掉的~");
+					document.getElementById('finalMessage').innerHTML = `
+						<h2 style="font-size:2em">真正的告白</h2>
+						<p style="font-size:1.2em">${loveWords[Math.floor(Math.random()*loveWords.length)]}</p>
+						<button onclick="location.reload()">再看一遍</button>
+					`;
+					document.getElementById('finalMessage').style.display = 'block';
+				}, 15000);
+			}
+
+
+			// 主启动逻辑
+			createHearts();
+			createEscapeButton();
+			speak("宝宝，要不咱俩处对象吧。每天跟你分享新鲜事，陪你打游戏，消息秒回，电话秒接。经常给你准备小惊喜，每天都会很爱很爱你。我保证以后对你好，你先跟我在一起行不行 ，情人节我着急骗你钱");
 		}
 
-		@keyframes blink {
-		  50% {
-			border-color: transparent;
-		  }
-		}		
-    </style>
-	<script src="scripts/rose.js"></script>
-</head>
-<body bgcolor="#161616">
-    <audio preload="none" controls="controls" autoplay="autoplay" loop="loop" >
-      <source src="audio/planet.mp3" type="audio/mp3">
-    </audio>
-	<div class="container">
-        <div class="message">
-            <h1>❤️ 亲爱的 ❤️</h1>
-            <p>万千星辰中，你是我唯一的光</p>
-            <p>愿以余生为期，许你一世温柔</p>
-            <p>你愿意成为我的唯一吗？</p>
-			<p>🌹</p>
-        </div>
-  	</div>
+    </script>
 </body>
 </html>
