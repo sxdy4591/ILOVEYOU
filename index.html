@@ -276,7 +276,10 @@
 
 			// 情话数据库
 			const loveWords = [
-				"我中意你啊🥰",
+				"你是我的一见钟情电路",
+				"我们的爱像递归函数永不终止",
+				"你是我的唯一进程优先级",
+				"想和你建立永久TCP连接"
 			];
 
 			// 鼠标追踪爱心
@@ -317,7 +320,7 @@
 				document.body.appendChild(runBtn);
 				setTimeout(() => {
 					runBtn.remove();
-					alert("其实......");
+					alert("你是跑不掉的~");
 					document.getElementById('finalMessage').innerHTML = `
 						<h2 style="font-size:2em">真正的告白</h2>
 						<p style="font-size:1.2em">${loveWords[Math.floor(Math.random()*loveWords.length)]}</p>
@@ -327,6 +330,10 @@
 				}, 15000);
 			}
 
+			// 背景音乐嵌入（自动播放需要用户交互）
+			const audio = new Audio('audio/audio.mp3'); // 截短版
+			audio.loop = true;
+			document.addEventListener('click', () => audio.play(), {once: true});
 
 			// 主启动逻辑
 			createHearts();
